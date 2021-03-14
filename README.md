@@ -1,7 +1,7 @@
-A sample micreservice with Flask, SQLAlchemy, Postgres and Docker
+## A sample micreservice with Flask, SQLAlchemy, Postgres and Docker
 
 
-Build the image and create the container:
+### Build the image and create the container:
 
 ``` shell
 docker-compose up -d --build
@@ -11,7 +11,7 @@ docker-compose up -d --build
 docker-compose exec web python manage.py create_db
 ```
 
-With [httpie](https://httpie.io/):
+### With [httpie](https://httpie.io/):
 
 ``` shell
 http -f POST :5000/user email="user@teste.com"
