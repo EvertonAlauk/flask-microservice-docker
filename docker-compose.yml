@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  web:
+    build: ./project
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    volumes:
+      - ./project/:/usr/src/app/
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    container_name: internet-banking
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=pools
+    container_name: postgres
+
+volumes:
+  postgres_data:
