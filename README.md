@@ -1,4 +1,4 @@
-## A sample micreservice with Flask, SQLAlchemy, Postgres and Docker
+## A sample microservice with Flask, SQLAlchemy, Postgres and Docker
 
 
 ### Build the image and create the container:
