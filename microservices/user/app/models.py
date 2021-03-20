@@ -13,8 +13,8 @@ class User(db.Model):
     active = db.Column(db.Boolean(), default=True, nullable=False)
     created = db.Column(db.DateTime(), default=datetime.datetime.now())
 
-    def __init__(self, username, password, name, email):
+    def __init__(self, username, email, password, name):
         self.username = username
+        self.email = email
         self.password = password
         self.name = name
-        self.email = email

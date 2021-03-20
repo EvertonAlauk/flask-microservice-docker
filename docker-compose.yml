@@ -1,27 +1,47 @@
 version: '3.7'
-
 services:
-  web:
-    build: ./project
-    command: gunicorn --bind 0.0.0.0:5000 manage:app
-    volumes:
-      - ./project/:/usr/src/app/
-    ports:
-      - 5000:5000
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-    container_name: internet-banking
-  db:
+  psql_db:
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+      - ./create_databases.sh:/docker-entrypoint-initdb.d/create_databases.sh
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=pools
+      - POSTGRES_DB=internet_banking
     container_name: postgres
-
+    
+  user:
+    build: ./microservices/user
+    command: gunicorn --bind 0.0.0.0:5001 manage:app
+    restart: always
+    environment:
+      - FLASK_APP=app/__init__.py
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://root:secret@psql_db:5432/users
+      - SQL_HOST=psql_db
+      - SQL_PORT=5432
+      - DATABASE=users
+    ports:
+      - 5001:5001
+    depends_on:
+      - psql_db
+    container_name: user
+  bank_account:
+    build: ./microservices/bank_account
+    command: gunicorn --bind 0.0.0.0:5002 manage:app
+    restart: always
+    environment:
+      - FLASK_APP=app/__init__.py
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://root:secret@psql_db:5432/bank_accounts
+      - SQL_HOST=psql_db
+      - SQL_PORT=5432
+      - DATABASE=bank_accounts
+    ports:
+      - 5002:5002
+    depends_on:
+      - psql_db
+    container_name: bank_account
 volumes:
   postgres_data:
