@@ -14,9 +14,9 @@
 
 - [API User](#api-user)
 - [API Auth with JWT](#api-auth)
+- [API Bank Account Balance](#api-balance)
 - [API Bank Account Credit](#api-credit)
 - [API Bank Account Debit](#api-debit)
-- [API Bank Account Balance](#api-balance)
 - [API Bank Account Statement](#api-statement)
 
 ## Build the image and create the container
@@ -87,7 +87,6 @@ Server: gunicorn/20.0.4
 http -f POST :5001/auth -a user:password123
 ```
 
-
 ``` json
 HTTP/1.1 200 OK
 Connection: close
@@ -102,8 +101,52 @@ Server: gunicorn/20.0.4
 }
 ```
 
-### Bank Account: Credit <a name="api-credit">
+### Bank Account: Balance <a name="api-balance">
 
+It's important, just one time, to include a balance for user.
+In this case, use the POST method.
+
+``` shell
+http -f POST :5002/balance value="2500.00" 'Authorization: Bearer {token}'
+```
+
+``` json
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 40
+Content-Type: application/json
+Date: Sun, 21 Mar 2021 13:58:50 GMT
+Server: gunicorn/20.0.4
+
+{
+    "id": 1,
+    "user_id": 1,
+    "value": 2500.0
+}
+```
+
+Otherwise, GET method for check the balance.
+
+``` shell
+http :5002/balance 'Authorization: Bearer {token}'
+```
+
+``` json
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 40
+Content-Type: application/json
+Date: Sun, 21 Mar 2021 13:58:50 GMT
+Server: gunicorn/20.0.4
+
+{
+    "id": 1,
+    "user_id": 1,
+    "value": 2500.0
+}
+```
+
+### Bank Account: Credit <a name="api-credit">
 
 ``` shell
 http -f POST :5002/credit value="2.6" 'Authorization: Bearer {token}'
@@ -142,27 +185,6 @@ Server: gunicorn/20.0.4
     "id": 1,
     "user_id": 1,
     "value": 2.6
-}
-```
-
-### Bank Account: Balance <a name="api-balance">
-
-``` shell
-http :5002/balance 'Authorization: Bearer {token}'
-```
-
-``` json
-HTTP/1.1 200 OK
-Connection: close
-Content-Length: 40
-Content-Type: application/json
-Date: Sun, 21 Mar 2021 13:58:50 GMT
-Server: gunicorn/20.0.4
-
-{
-    "id": 1,
-    "user_id": 1,
-    "value": 2487.4
 }
 ```
 
