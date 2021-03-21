@@ -1,0 +1,17 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+rule_files:
+scrape_configs:
+  - job_name: 'user'
+    dns_sd_configs:
+      - names: ['user']
+        port: 5001
+        type: A
+        refresh_interval: 5s
+  - job_name: 'bank_account'
+    dns_sd_configs:
+      - names: ['bank_account']
+        port: 5002
+        type: A
+        refresh_interval: 5s

@@ -224,3 +224,31 @@ Server: gunicorn/20.0.4
     ]
 }
 ```
+
+## Monitoring and metrics
+
+### Prometheus
+
+```
+http://localhost:9090
+```
+
+### Grafana
+
+```
+http://localhost:3000
+```
+
+## Automation Testing
+
+### Jenkins
+
+```
+http://localhost:8081
+```
+
+```
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+Copy the password and join the Jenkins plataform.

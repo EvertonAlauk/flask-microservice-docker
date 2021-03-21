@@ -13,10 +13,15 @@ from app.schemas import CreditSchema
 from app.schemas import DebitSchema
 from app.schemas import BalanceSchema
 from app.decorators import token_required
+from app.prometheus import balance_counter
+from app.prometheus import credit_counter
+from app.prometheus import debit_counter
+from app.prometheus import statement_counter
 
 
 @app.route("/credit", methods=["POST"])
 @token_required
+@credit_counter
 def credit(user_id):
     credit = Credit(
         user_id=int(user_id),
@@ -36,6 +41,7 @@ def credit(user_id):
 
 @app.route("/debit", methods=["POST"])
 @token_required
+@debit_counter
 def debit(user_id):
     debit = Debit(
         user_id=int(user_id),
@@ -55,6 +61,7 @@ def debit(user_id):
 
 @app.route("/balance", methods=["GET", "POST"])
 @token_required
+@balance_counter
 def balance(user_id):
     if request.method == "POST":
         balance = Balance.query.filter_by(user_id=user_id).first()
@@ -73,6 +80,7 @@ def balance(user_id):
 
 @app.route("/statement", methods=["GET"])
 @token_required
+@statement_counter
 def statement(user_id):
     response = {}
     response.update({

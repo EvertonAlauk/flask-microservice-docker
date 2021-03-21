@@ -10,7 +10,6 @@ services:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=internet_banking
     container_name: postgres
-    
   user:
     build: ./microservices/user
     command: gunicorn --bind 0.0.0.0:5001 manage:app
@@ -25,6 +24,8 @@ services:
       - 5001:5001
     depends_on:
       - psql_db
+      - prometheus
+      - grafana
     container_name: user
   bank_account:
     build: ./microservices/bank_account
@@ -40,6 +41,56 @@ services:
       - 5002:5002
     depends_on:
       - psql_db
+      - prometheus
     container_name: bank_account
+  prometheus:
+      image: prom/prometheus:latest
+      restart: always
+      ports:
+        - 9090:9090
+      volumes:
+        - ./prometheus/:/etc/prometheus/
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+      container_name: prometheus
+  grafana:
+      image: grafana/grafana:latest
+      restart: always
+      environment:
+        - GF_SECURITY_ADMIN_USER=user@gmail.com
+        - GF_SECURITY_ADMIN_PASSWORD=secret
+      user: "472"
+      depends_on:
+        - prometheus
+      ports:
+        - 3000:3000
+      volumes:
+        - ./monitoring/datasource.yml:/etc/grafana/provisioning/datasource.yml
+      networks:
+        internet_banking_network:
+          ipv4_address: 172.16.238.12
+      container_name: grafana
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8081:8080
+      - 50000:50000
+    volumes:
+      - ~/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
+    container_name: jenkins
+networks:
+  internet_banking_network:
+    name: internet-banking-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
 volumes:
   postgres_data:
+  prometheus:
+  jenkins:

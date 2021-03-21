@@ -10,14 +10,18 @@ from werkzeug.security import check_password_hash
 
 from app import app
 from app import db
+from app import metrics
 from app.exceptions import UserExceptions
 from app.exceptions import AuthExceptions
 from app.user import UserData
 from app.models import User
 from app.schemas import UserSchema
+from app.prometheus import user_counter
+from app.prometheus import auth_counter
 
 
 @app.route("/user", methods=["GET", "POST"])
+@user_counter
 def user():
     try:
         if request.method == "POST":
@@ -34,6 +38,7 @@ def user():
 
 
 @app.route("/auth", methods=["POST"])
+@auth_counter
 def auth():
     try:
         auth = request.authorization
