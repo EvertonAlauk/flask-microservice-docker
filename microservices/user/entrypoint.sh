@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$DATABASE" = "users" ]
+if [ "$DATABASE" = "internet_banking" ]
 then
     echo "Waiting for postgres on host $SQL_HOST port $SQL_PORT..."
   

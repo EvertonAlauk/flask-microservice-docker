@@ -1,5 +1,7 @@
 # Internet Banking
 
+## Requirements
+
 - Flask
 - SQLAlchemy
 - Flask-Migrate
@@ -8,15 +10,27 @@
 - PyJWT
 - Docker & docker-compose
 
-### Build the image and create the container:
+## Sumary
+
+- [API User](#api-user)
+- [API Auth with JWT](#api-auth)
+- [API Bank Account Credit](#api-credit)
+- [API Bank Account Debit](#api-debit)
+- [API Bank Account Balance](#api-balance)
+- [API Bank Account Statement](#api-statement)
+
+## Build the image and create the container
 
 ``` shell
-docker-compose up -d --build
+docker-compose up --build
 ```
 
-### With [httpie](https://httpie.io/):
+At now, will created two microservices and both have your own port.
+User have the `:5001` and bank account thave the `:5002` port connection.
 
-## User
+## With [httpie](https://httpie.io/):
+
+### User <a name="api-user">
 
 ``` shell
 http -f POST :5001/user username="user" email="user@teste.com" password="password123" name="user"
@@ -40,7 +54,6 @@ Server: gunicorn/20.0.4
         "username": "user"
     }
 ]
-
 ```
 
 
@@ -68,7 +81,7 @@ Server: gunicorn/20.0.4
 ]
 ```
 
-## Create a JWT to run private endpoints
+### Auth JWT <a name="api-auth">
 
 ``` shell
 http -f POST :5001/auth -a user:password123
@@ -89,12 +102,11 @@ Server: gunicorn/20.0.4
 }
 ```
 
-## Bank Account
+### Bank Account: Credit <a name="api-credit">
 
-> Credit
 
 ``` shell
-http -f POST :5002/credit credit="2.6" 'Authorization: Bearer {token}'
+http -f POST :5002/credit value="2.6" 'Authorization: Bearer {token}'
 ```
 
 ``` json
@@ -106,8 +118,87 @@ Date: Sat, 20 Mar 2021 22:33:03 GMT
 Server: gunicorn/20.0.4
 
 {
-    "credit": 2.6,
     "id": 1,
-    "user_id": 1
+    "user_id": 1,
+    "value": 2.6
+}
+```
+
+### Bank Account: Debit <a name="api-debit">
+
+``` shell
+http -f POST :5002/debit value="2.6" 'Authorization: Bearer {token}'
+```
+
+``` json
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 38
+Content-Type: application/json
+Date: Sat, 20 Mar 2021 22:33:03 GMT
+Server: gunicorn/20.0.4
+
+{
+    "id": 1,
+    "user_id": 1,
+    "value": 2.6
+}
+```
+
+### Bank Account: Balance <a name="api-balance">
+
+``` shell
+http :5002/balance 'Authorization: Bearer {token}'
+```
+
+``` json
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 40
+Content-Type: application/json
+Date: Sun, 21 Mar 2021 13:58:50 GMT
+Server: gunicorn/20.0.4
+
+{
+    "id": 1,
+    "user_id": 1,
+    "value": 2487.4
+}
+```
+
+### Bank Account: Statement <a name="api-statement">
+
+``` shell
+http :5002/statement 'Authorization: Bearer {token}'
+```
+
+``` json
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 142
+Content-Type: application/json
+Date: Sun, 21 Mar 2021 13:57:57 GMT
+Server: gunicorn/20.0.4
+
+{
+    "credits": [
+        {
+            "id": 1,
+            "user_id": 1,
+            "value": 2.6
+        },
+        {
+            "id": 2,
+            "user_id": 1,
+            "value": 5.1
+        }
+    ],
+    "debits": [
+        {
+            "id": 1,
+            "user_id": 1,
+            "value": 4.9
+        }
+    ]
 }
 ```

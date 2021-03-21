@@ -4,7 +4,7 @@ services:
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - ./create_databases.sh:/docker-entrypoint-initdb.d/create_databases.sh
+      #- ./create_databases.sh:/docker-entrypoint-initdb.d/create_databases.sh
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
@@ -18,10 +18,9 @@ services:
     environment:
       - FLASK_APP=app/__init__.py
       - FLASK_ENV=development
-      - DATABASE_URL=postgresql://root:secret@psql_db:5432/users
+      - DATABASE_URL=postgresql://root:secret@psql_db:5432/internet_banking
       - SQL_HOST=psql_db
       - SQL_PORT=5432
-      - DATABASE=users
     ports:
       - 5001:5001
     depends_on:
@@ -34,10 +33,9 @@ services:
     environment:
       - FLASK_APP=app/__init__.py
       - FLASK_ENV=development
-      - DATABASE_URL=postgresql://root:secret@psql_db:5432/bank_accounts
+      - DATABASE_URL=postgresql://root:secret@psql_db:5432/internet_banking
       - SQL_HOST=psql_db
       - SQL_PORT=5432
-      - DATABASE=bank_accounts
     ports:
       - 5002:5002
     depends_on:
