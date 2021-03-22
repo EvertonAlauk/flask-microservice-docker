@@ -1,4 +1,4 @@
-name: Tests
+name: Internet Bankins Tests
 on: [push, pull_request]
 jobs:
   test:
@@ -16,3 +16,7 @@ jobs:
     - name: Run user tests
       run: |
         python -m pytest -s microservices/user/tests -vv
+    - name: Run bank account tests
+      run: |
+        python -m pytest -s microservices/bank_account/tests -vv
+        
