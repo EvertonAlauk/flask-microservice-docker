@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  web:
+  apps:
     image: hello-world
     links:
       - user
@@ -11,7 +11,7 @@ services:
       #- jenkins
 
   user:
-    build: ./microservices/user
+    image: evertonalaukimpacta/user:latest
     command: gunicorn --bind 0.0.0.0:5001 manage:app
     restart: always
     environment:
@@ -26,10 +26,12 @@ services:
       - psql_db
       - prometheus
       - grafana
+    networks:
+      - internet_banking_network
     container_name: user
 
   bank_account:
-    build: ./microservices/bank_account
+    image: evertonalaukimpacta/bank_account:latest
     command: gunicorn --bind 0.0.0.0:5002 manage:app
     restart: always
     environment:
@@ -43,6 +45,9 @@ services:
     depends_on:
       - psql_db
       - prometheus
+      - grafana
+    networks:
+      - internet_banking_network
     container_name: bank_account
 
   psql_db:
@@ -54,6 +59,8 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=internet_banking
+    networks:
+      - internet_banking_network
     container_name: postgres
 
   prometheus:
@@ -65,6 +72,8 @@ services:
       - ./prometheus/:/etc/prometheus/
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - internet_banking_network
     container_name: prometheus
 
   grafana:
@@ -81,8 +90,7 @@ services:
     volumes:
       - ./monitoring/datasource.yml:/etc/grafana/provisioning/datasource.yml
     networks:
-      internet_banking_network:
-        ipv4_address: 172.16.238.12
+      - internet_banking_network
     container_name: grafana
 
   jenkins:
@@ -102,10 +110,6 @@ networks:
   internet_banking_network:
     name: internet-banking-network
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.16.238.0/24
 volumes:
   postgres_data:
   prometheus:
