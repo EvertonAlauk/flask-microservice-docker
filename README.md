@@ -279,39 +279,27 @@ timeToStop: Nonexistent
 minikube dashboard
 ```
 
-### Namespace
+### Namespace and apps
 
-```
-kubectl apply -f k8s/config
-```
-
-### Nginx
-
-```
-kubectl -n internet-banking apply -f k8s/nginx
+``` shell
+make kube-apply
 ```
 
-### Database
+### Tables
 
-```
-kubectl -n internet-banking apply -f k8s/postgres
-```
-
-### User microservice
-
-```
-kubectl -n internet-banking apply -f k8s/user
+``` shell
+make start-tables
 ```
 
 ### Minikube tunnel
 
 Keep this command running:
 
-```
+``` shell
 minikube tunnel
 ```
 
-```
+``` shell
 Status:	
 	machine: minikube
 	pid: 42901
@@ -326,10 +314,10 @@ Status:
 
 ### Run the user API throught the kubernetes container
 
-Get the user or bank_account service external IP:
+Get the service external IP:
 
-```
-http -f POST <app-svc-external-ip>:5001/user username="user" email="user@teste.com" password="password123" name="user"
+``` shell
+http -f POST <user-svc-external-ip>:5001/user username="user" email="user@teste.com" password="password123" name="user"
 ```
 
 ``` json

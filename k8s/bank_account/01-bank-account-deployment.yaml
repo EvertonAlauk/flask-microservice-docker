@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-account
+  labels:
+    app: bank-account
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app: bank-account
+  template:
+    metadata:
+      labels:
+        app: bank-account
+    spec:
+      containers:
+        - name: bank-account
+          image: evertonalaukimpacta/bank_account:latest
+          command: ["gunicorn", "--bind", "0.0.0.0:5002", "manage:app"]
+          ports:
+            - containerPort: 5002
+          envFrom:
+            - configMapRef:
+                name: bank-account-configmap
