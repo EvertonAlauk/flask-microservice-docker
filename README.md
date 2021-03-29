@@ -24,9 +24,9 @@
     - [Bank Account Credit](#api-credit)
     - [Bank Account Debit](#api-debit)
     - [Bank Account Statement](#api-statement)
-    - [Prometheus](#prometheus)
-    - [Grafana](#grafana)
-    - [Github Actions](https://github.com/EvertonAlauk/flask-microservice-docker/actions)
+- [Prometheus](#prometheus)
+- [Grafana](#grafana)
+- [Github Actions](https://github.com/EvertonAlauk/flask-microservice-docker/actions)
 
 
 ## Docker-compose
