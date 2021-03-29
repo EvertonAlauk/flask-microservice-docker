@@ -8,21 +8,90 @@
 - Postgres
 - Gunicorn
 - PyJWT
+- Github Actions
+- Prometheus
+- Grafana
 - Docker & docker-compose
+- Kubernetes
+- Minikube
 
 ## Sumary
 
-- [API User](#api-user)
-- [API Auth with JWT](#api-auth)
-- [API Bank Account Balance](#api-balance)
-- [API Bank Account Credit](#api-credit)
-- [API Bank Account Debit](#api-debit)
-- [API Bank Account Statement](#api-statement)
+- APIs:
+    - [User](#api-user)
+    - [Auth with JWT](#api-auth)
+    - [Bank Account Balance](#api-balance)
+    - [Bank Account Credit](#api-credit)
+    - [Bank Account Debit](#api-debit)
+    - [Bank Account Statement](#api-statement)
+    - [Prometheus](#prometheus)
+    - [Grafana](#grafana)
+    - [Github Actions](https://github.com/EvertonAlauk/flask-microservice-docker/actions)
 
-## Build the image and create the container
+
+## Docker-compose
 
 ``` shell
-docker-compose up --build
+docker-compose up -d --build
+```
+
+## Kubernetes
+
+### Minikube <a name="minikube">
+
+``` shell
+minikube start
+```
+
+``` shell
+minikube status
+```
+
+``` shell
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+timeToStop: Nonexistent
+```
+
+``` shell
+minikube dashboard
+```
+
+### Namespace and apps <a name="ns-apps">
+
+``` shell
+make kube-apply
+```
+
+### Tables <a name="tables">
+
+``` shell
+make start-tables
+```
+
+### Minikube tunnel <a name="tunnel">
+
+Keep this command running:
+
+``` shell
+minikube tunnel
+```
+
+``` shell
+Status:	
+	machine: minikube
+	pid: 42901
+	route: 10.96.0.0/12 -> 192.168.49.2
+	minikube: Running
+	services: [nginx-svc, postgres-svc, user-svc, bank-account-svc]
+    errors: 
+		minikube: no errors
+		router: no errors
+		loadbalancer emulator: no errors
 ```
 
 At now, will created two microservices and both have your own port.
@@ -34,6 +103,14 @@ User have the `:5001` and bank account thave the `:5002` port connection.
 
 ``` shell
 http -f POST :5001/user username="user" email="user@teste.com" password="password123" name="user"
+```
+
+### Run the user API throught the kubernetes container
+
+Get the service external IP:
+
+``` shell
+http -f POST <user-svc-external-ip>:5001/user username="user" email="user@teste.com" password="password123" name="user"
 ```
 
 ``` json
@@ -227,13 +304,13 @@ Server: gunicorn/20.0.4
 
 ## Monitoring and metrics
 
-### Prometheus
+### Prometheus <a name="prometheus">
 
 ``` shell
 http://localhost:9090
 ```
 
-### Grafana
+### Grafana <a name="grafana">
 
 ``` shell
 http://localhost:3000
@@ -252,90 +329,3 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 Copy the password and join the Jenkins plataform.
-
-## Kubernetes
-
-### Minikube
-
-``` shell
-minikube start
-```
-
-``` shell
-minikube status
-```
-
-``` shell
-minikube
-type: Control Plane
-host: Running
-kubelet: Running
-apiserver: Running
-kubeconfig: Configured
-timeToStop: Nonexistent
-```
-
-``` shell
-minikube dashboard
-```
-
-### Namespace and apps
-
-``` shell
-make kube-apply
-```
-
-### Tables
-
-``` shell
-make start-tables
-```
-
-### Minikube tunnel
-
-Keep this command running:
-
-``` shell
-minikube tunnel
-```
-
-``` shell
-Status:	
-	machine: minikube
-	pid: 42901
-	route: 10.96.0.0/12 -> 192.168.49.2
-	minikube: Running
-	services: [nginx-svc, postgres-svc, user-svc, bank-account-svc]
-    errors: 
-		minikube: no errors
-		router: no errors
-		loadbalancer emulator: no errors
-```
-
-### Run the user API throught the kubernetes container
-
-Get the service external IP:
-
-``` shell
-http -f POST <user-svc-external-ip>:5001/user username="user" email="user@teste.com" password="password123" name="user"
-```
-
-``` json
-HTTP/1.1 200 OK
-Connection: close
-Content-Length: 54
-Content-Type: application/json
-Date: Sun, 14 Mar 2021 23:38:35 GMT
-Server: gunicorn/20.0.4
-
-[
-    {
-        "active": true,
-        "created": "2021-03-15T00:08:14.180200",
-        "email": "user@teste.com",
-        "id": 1,
-        "name": "user",
-        "username": "user"
-    }
-]
-```
