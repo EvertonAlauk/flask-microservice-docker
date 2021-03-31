@@ -5,7 +5,7 @@ metadata:
   labels:
     app: bank-account
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: bank-account
   ports:

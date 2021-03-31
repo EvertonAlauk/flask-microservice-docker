@@ -1,7 +1,9 @@
 from enum import Enum
 
 class UserExceptions(Enum):
-    ERROR = {"error": "Error in user API: {}"}
+    ERROR = "Error in user API: {}"
+    USER_ID_IS_MISSING = "Parameter *user_id* is missing."
+    USER_ID_NOT_FOUND = "User with parameter *{}* is not found."
 
 class AuthExceptions(Enum):
     ERROR = {"error": "Error in user API: {}"}

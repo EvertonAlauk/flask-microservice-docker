@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: internet-banking
+spec:
+  ingressClassName: ingress
+  rules:
+  - http:
+      paths:
+      - path: /user
+        pathType: Prefix
+        backend:
+          service:
+            name: user-svc
+            port:
+              number: 5001
+      - path: /bank_account
+        pathType: Prefix
+        backend:
+          service:
+            name: bank-account-svc
+            port:
+              number: 5002

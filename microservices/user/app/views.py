@@ -20,9 +20,9 @@ from app.prometheus import user_counter
 from app.prometheus import auth_counter
 
 
-@app.route("/user", methods=["GET", "POST"])
+@app.route("/user/<user_id>/", methods=["GET", "POST"])
 @user_counter
-def user():
+def user(user_id):
     try:
         if request.method == "POST":
             user_data = UserData(**request.form).__dict__
@@ -30,14 +30,18 @@ def user():
             if not User.query.filter_by(email=user.email).first():
                 db.session.add(user)
                 db.session.commit()
-        response = UserSchema(many=True).dump(User.query.all())
-        return Response(json.dumps(response), mimetype='application/json')
+        if not user_id:
+            return Response(json.dumps({"status": False, "error": UserExceptions.USER_ID_IS_MISSING.value }), mimetype='application/json')
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return Response(json.dumps({"status": False, "error": UserExceptions.USER_ID_NOT_FOUND.value }), mimetype='application/json')
+        return Response(json.dumps({"status": True, "response_data": UserSchema().dump(user)}), mimetype='application/json')
     except Exception as e:
         print(f"Error: {e}")
-        return Response(json.dumps(UserExceptions.ERROR.value), mimetype='application/json')
+        return Response(json.dumps({"status": False, "error": UserExceptions.ERROR.value.format(str(e)) }), mimetype='application/json')
 
 
-@app.route("/auth", methods=["POST"])
+@app.route("/user/auth", methods=["POST"])
 @auth_counter
 def auth():
     try:

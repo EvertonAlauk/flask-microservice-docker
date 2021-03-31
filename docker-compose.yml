@@ -11,7 +11,8 @@ services:
       #- jenkins
 
   user:
-    image: evertonalaukimpacta/user:latest
+    #image: evertonalaukimpacta/user:latest
+    build: ./microservices/user
     command: gunicorn --bind 0.0.0.0:5001 manage:app
     restart: always
     environment:
@@ -31,7 +32,8 @@ services:
     container_name: user
 
   bank_account:
-    image: evertonalaukimpacta/bank_account:latest
+    #image: evertonalaukimpacta/bank_account:latest
+    build: ./microservices/bank_account
     command: gunicorn --bind 0.0.0.0:5002 manage:app
     restart: always
     environment:
