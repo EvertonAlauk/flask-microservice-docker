@@ -32,85 +32,67 @@
 ## Docker-compose
 
 ``` shell
-docker-compose up -d --build
+docker-compose up -d
 ```
 
-## Kubernetes
+or
+
+## K8S
 
 ### Minikube <a name="minikube">
 
 ``` shell
-minikube start
-```
-
-``` shell
-minikube status
-```
-
-``` shell
-minikube
-type: Control Plane
-host: Running
-kubelet: Running
-apiserver: Running
-kubeconfig: Configured
-timeToStop: Nonexistent
-```
-
-``` shell
-minikube dashboard
+make minikube
 ```
 
 ### Namespace and apps <a name="ns-apps">
 
 ``` shell
-make kube-apply
+make kubernetes
 ```
 
-### Tables <a name="tables">
+### Create the databases <a name="tables">
 
 ``` shell
-make start-tables
+make databases
 ```
 
-### Minikube tunnel <a name="tunnel">
-
-Keep this command running:
+### Check your services
 
 ``` shell
-minikube tunnel
+make kube-services 
 ```
 
-``` shell
-Status:	
-	machine: minikube
-	pid: 42901
-	route: 10.96.0.0/12 -> 192.168.49.2
-	minikube: Running
-	services: [nginx-svc, postgres-svc, user-svc, bank-account-svc]
-    errors: 
-		minikube: no errors
-		router: no errors
-		loadbalancer emulator: no errors
 ```
-
-At now, will created two microservices and both have your own port.
-User have the `:5001` and bank account thave the `:5002` port connection.
+kubectl -n internet-banking get services
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+bank-account-svc   ClusterIP   10.109.219.209   <none>        5002/TCP   18d
+postgres-svc       ClusterIP   10.107.25.52     <none>        5432/TCP   18d
+user-svc           ClusterIP   10.97.213.50     <none>        5001/TCP   18d
+```
 
 ## With [httpie](https://httpie.io/):
 
-### User <a name="api-user">
-
-``` shell
-http -f POST :5001/user username="user" email="user@teste.com" password="password123" name="user"
-```
-
 ### Run the user API throught the kubernetes container
 
-Get the service external IP:
+Notice that your services with Flask application has avaliable at `5001`, `5002` and `5003` port address. Use `ingress` to acess then.
+
 
 ``` shell
-http -f POST <user-svc-external-ip>:5001/user username="user" email="user@teste.com" password="password123" name="user"
+make kube-ingress    
+```
+
+```
+kubectl -n internet-banking get ingress
+NAME      CLASS     HOSTS   ADDRESS        PORTS   AGE
+ingress   ingress   *       192.168.49.2   80      15d
+```
+
+### User <a name="api-user">
+
+
+``` shell
+http -f POST <ingress-address>:80/user username="user" email="user@teste.com" password="password123" name="user"
 ```
 
 ``` json
@@ -135,7 +117,7 @@ Server: gunicorn/20.0.4
 
 
 ``` shell
-http :5000/user
+http <ingress-address>:80/user
 ```
 
 ``` json
@@ -161,7 +143,7 @@ Server: gunicorn/20.0.4
 ### Auth JWT <a name="api-auth">
 
 ``` shell
-http -f POST :5001/auth -a user:password123
+http -f POST <ingress-address>:80/user/auth -a user:password123
 ```
 
 ``` json
@@ -184,7 +166,7 @@ It's important, just one time, to include a balance for user.
 In this case, use the POST method.
 
 ``` shell
-http -f POST :5002/balance value="2500.00" 'Authorization: Bearer {token}'
+http -f POST <ingress-address>:80/bank_account/balance/ value="2500.00" 'Authorization: Bearer {token}'
 ```
 
 ``` json
@@ -205,7 +187,7 @@ Server: gunicorn/20.0.4
 Otherwise, GET method for check the balance.
 
 ``` shell
-http :5002/balance 'Authorization: Bearer {token}'
+http <ingress-address>:80/bank_account/balance/ 'Authorization: Bearer {token}'
 ```
 
 ``` json
@@ -226,7 +208,7 @@ Server: gunicorn/20.0.4
 ### Bank Account: Credit <a name="api-credit">
 
 ``` shell
-http -f POST :5002/credit value="2.6" 'Authorization: Bearer {token}'
+http -f POST <ingress-address>:80/bank_account/credit value="2.6" 'Authorization: Bearer {token}'
 ```
 
 ``` json
@@ -247,7 +229,7 @@ Server: gunicorn/20.0.4
 ### Bank Account: Debit <a name="api-debit">
 
 ``` shell
-http -f POST :5002/debit value="2.6" 'Authorization: Bearer {token}'
+http -f POST <ingress-address>:80/bank_account/debit value="2.6" 'Authorization: Bearer {token}'
 ```
 
 ``` json
@@ -268,7 +250,7 @@ Server: gunicorn/20.0.4
 ### Bank Account: Statement <a name="api-statement">
 
 ``` shell
-http :5002/statement 'Authorization: Bearer {token}'
+http <ingress-address>:80/bank_account/statement 'Authorization: Bearer {token}'
 ```
 
 ``` json

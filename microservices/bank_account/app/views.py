@@ -19,7 +19,7 @@ from app.prometheus import debit_counter
 from app.prometheus import statement_counter
 
 
-@app.route("/bank_account/credit", methods=["POST"])
+@app.route("/bank_account/credit/", methods=["POST"])
 @token_required
 @credit_counter
 def credit(user_id):
@@ -39,7 +39,7 @@ def credit(user_id):
     return Response(json.dumps(response), mimetype='application/json')
 
 
-@app.route("/bank_account/debit", methods=["POST"])
+@app.route("/bank_account/debit/", methods=["POST"])
 @token_required
 @debit_counter
 def debit(user_id):
@@ -59,7 +59,7 @@ def debit(user_id):
     return Response(json.dumps(response), mimetype='application/json')
 
 
-@app.route("/bank_account/balance", methods=["GET", "POST"])
+@app.route("/bank_account/balance/", methods=["GET", "POST"])
 @token_required
 @balance_counter
 def balance(user_id):
@@ -78,7 +78,7 @@ def balance(user_id):
     return Response(json.dumps(response), mimetype='application/json')
 
 
-@app.route("/bank_account/statement", methods=["GET"])
+@app.route("/bank_account/statement/", methods=["GET"])
 @token_required
 @statement_counter
 def statement(user_id):

@@ -1,18 +1,8 @@
 version: '3.7'
 services:
-  apps:
-    image: hello-world
-    links:
-      - user
-      - bank_account
-      - psql_db
-      - prometheus
-      - grafana
-      #- jenkins
-
   user:
-    #image: evertonalaukimpacta/user:latest
-    build: ./microservices/user
+    image: evertonalaukimpacta/user:latest
+    #build: './microservices/user'
     command: gunicorn --bind 0.0.0.0:5001 manage:app
     restart: always
     environment:
@@ -21,6 +11,7 @@ services:
       - DATABASE_URL=postgresql://root:secret@psql_db:5432/internet_banking
       - SQL_HOST=psql_db
       - SQL_PORT=5432
+      - SECRET_KEY=Q7KAuYeP8NC5
     ports:
       - 5001:5001
     depends_on:
@@ -29,11 +20,13 @@ services:
       - grafana
     networks:
       - internet_banking_network
+    volumes:
+      - ./microservices/user/:/usr/src/app
     container_name: user
 
   bank_account:
     #image: evertonalaukimpacta/bank_account:latest
-    build: ./microservices/bank_account
+    build: './microservices/bank_account'
     command: gunicorn --bind 0.0.0.0:5002 manage:app
     restart: always
     environment:
@@ -42,6 +35,7 @@ services:
       - DATABASE_URL=postgresql://root:secret@psql_db:5432/internet_banking
       - SQL_HOST=psql_db
       - SQL_PORT=5432
+      - SECRET_KEY=Q7KAuYeP8NC5
     ports:
       - 5002:5002
     depends_on:
@@ -50,13 +44,14 @@ services:
       - grafana
     networks:
       - internet_banking_network
+    volumes:
+      - ./microservices/bank_account/:/usr/src/app
     container_name: bank_account
 
   psql_db:
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      #- ./create_databases.sh:/docker-entrypoint-initdb.d/create_databases.sh
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret

@@ -18,6 +18,7 @@ then
   echo "Database initialization..."
   python manage.py db init
   echo "Database migration..."
+  python manage.py db current
   python manage.py db migrate
 fi
 
