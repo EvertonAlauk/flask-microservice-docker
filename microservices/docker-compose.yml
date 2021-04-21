@@ -1,8 +1,8 @@
 version: '3.7'
 services:
   user:
-    image: evertonalaukimpacta/user:latest
-    #build: './microservices/user'
+    #image: evertonalaauk/user:1.0.1
+    build: ./user
     command: gunicorn --bind 0.0.0.0:5001 manage:app
     restart: always
     environment:
@@ -21,12 +21,11 @@ services:
     networks:
       - internet_banking_network
     volumes:
-      - ./microservices/user/:/usr/src/app
+      - ./user/:/usr/src/app
     container_name: user
-
   bank_account:
-    #image: evertonalaukimpacta/bank_account:latest
-    build: './microservices/bank_account'
+    #image: evertonalaauk/bank_account:1.0.1
+    build: ./bank_account
     command: gunicorn --bind 0.0.0.0:5002 manage:app
     restart: always
     environment:
@@ -45,9 +44,8 @@ services:
     networks:
       - internet_banking_network
     volumes:
-      - ./microservices/bank_account/:/usr/src/app
+      - ./bank_account/:/usr/src/app
     container_name: bank_account
-
   psql_db:
     image: postgres:12-alpine
     volumes:
@@ -59,7 +57,6 @@ services:
     networks:
       - internet_banking_network
     container_name: postgres
-
   prometheus:
     image: prom/prometheus:latest
     restart: always
@@ -72,7 +69,6 @@ services:
     networks:
       - internet_banking_network
     container_name: prometheus
-
   grafana:
     image: grafana/grafana:latest
     restart: always
@@ -89,11 +85,10 @@ services:
     networks:
       - internet_banking_network
     container_name: grafana
-
   jenkins:
     image: jenkins/jenkins:lts
     privileged: true
-    user: root
+    user: root # secret
     ports:
       - 8081:8080
       - 50000:50000
@@ -102,7 +97,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
     container_name: jenkins
-
 networks:
   internet_banking_network:
     name: internet-banking-network
@@ -110,4 +104,4 @@ networks:
 volumes:
   postgres_data:
   prometheus:
-  #jenkins:
+  jenkins:

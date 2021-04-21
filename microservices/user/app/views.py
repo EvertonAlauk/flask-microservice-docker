@@ -20,17 +20,21 @@ from app.prometheus import user_counter
 from app.prometheus import auth_counter
 
 
-@app.route('/user', methods=["POST"])
+@app.route('/user', methods=["GET", "POST"])
 @user_counter
 def user():
     try:
-        user = User(**UserData(**request.form).__dict__)
-        if not User.query.filter_by(email=user.email).first():
-            db.session.add(user)
-            db.session.commit()
+        if request.method == "POST":
+            user = User(**UserData(**request.json).__dict__)
+            if not User.query.filter_by(email=user.email).first():
+                db.session.add(user)
+                db.session.commit()
+                return Response(json.dumps({
+                    "status": True,
+                    "response_data": UserSchema().dump(user)
+                }), mimetype='application/json')
             return Response(json.dumps({
-                "status": True,
-                "response_data": UserSchema().dump(user)
+                "status": False
             }), mimetype='application/json')
         return Response(json.dumps({
             "status": False,
@@ -45,7 +49,7 @@ def user():
 
 @app.route('/user/<user_id>', methods=["GET"])
 @user_counter
-def user_by_id(user_id):
+def user_by_id(user_id=None):
     try:
         if not user_id:
             return Response(json.dumps({
@@ -90,11 +94,18 @@ def auth():
                 "status": False,
                 "error": AuthExceptions.PASSWORD_NOT_MATCH.value
             }), mimetype='application/json')
+        exp = datetime.timestamp(datetime.now() + timedelta(hours=12))
         return Response(json.dumps({
             "status": True,
             "response_data": {
-                "token": jwt.encode(UserSchema().dump(user), app.config['SECRET_KEY']),
-                "expired": datetime.timestamp(datetime.now() + timedelta(hours=12))
+                "token": jwt.encode(
+                    payload={
+                        "user": UserSchema().dump(user),
+                        "exp": exp
+                    },
+                    key=app.config['SECRET_KEY']
+                ),
+                "exp": exp
             }
         }), mimetype='application/json')
     except Exception as e:

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: user
 spec:
-  replicas: 
+  replicas:
   selector:
     matchLabels:
       app: user
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user
-          image: evertonalaukimpacta/user:latest
+          image: evertonalaauk/user:1.0.2
           command: ["gunicorn", "--bind", "0.0.0.0:5001", "manage:app"]
           ports:
             - containerPort: 5001

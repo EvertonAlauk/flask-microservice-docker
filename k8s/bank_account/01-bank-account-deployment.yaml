@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bank-account
-          image: evertonalaukimpacta/bank_account:latest
+          image: evertonalaauk/bank_account:1.0.9
           command: ["gunicorn", "--bind", "0.0.0.0:5002", "manage:app"]
           ports:
             - containerPort: 5002

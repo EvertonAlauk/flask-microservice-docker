@@ -1,0 +1,68 @@
+
+@token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImNyZWF0ZWQiOiIyMDIxLTA0LTIxVDE4OjQ0OjE2LjM2ODY1NCIsIm5hbWUiOiJ1c2VyIiwidXNlcm5hbWUiOiJ1c2VyIiwiZW1haWwiOiJ1c2VyQHRlc3RlLmNvbSIsImFjdGl2ZSI6dHJ1ZSwiaWQiOjF9LCJleHAiOjE2MTkwNzg2MDguMDgzODk4fQ.zzw0S4byLMLeRuPgQTkPp6pl0yM2ZsEPOZmbiCAKWrM
+@ip_address=192.168.49.2
+
+###
+
+POST http://{{ip_address}}/user HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "user",
+    "email": "user@teste.com",
+    "password": "password123",
+    "name": "user"
+}
+
+###
+
+GET http://{{ip_address}}/user/1 HTTP/1.1
+Content-Type: application/json
+
+###
+
+POST http://{{ip_address}}/user/auth HTTP/1.1
+Content-Type: application/json
+Authorization: Basic user:password123
+
+###
+
+POST http://{{ip_address}}/bank_account/balance/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "value": 10.00
+}
+
+###
+
+GET http://{{ip_address}}/bank_account/balance/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+POST http://{{ip_address}}/bank_account/credit/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "value": 10.00
+}
+
+###
+
+POST http://{{ip_address}}/bank_account/debit/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "value": 10.00
+}
+
+###
+
+GET http://{{ip_address}}/bank_account/statement/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

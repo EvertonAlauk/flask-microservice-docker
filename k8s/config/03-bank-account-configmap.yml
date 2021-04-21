@@ -9,3 +9,4 @@ data:
   DATABASE_URL: postgresql://root:secret@postgres-svc:5432/internet_banking
   SQL_HOST: postgres-svc
   SQL_PORT: "5432"
+  SECRET_KEY: "Q7KAuYeP8NC5"

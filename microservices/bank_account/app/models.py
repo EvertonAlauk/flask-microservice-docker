@@ -15,6 +15,10 @@ class Credit(db.Model):
         self.user_id = user_id
         self.value = value
 
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 class Debit(db.Model):
     __tablename__ = "debits"
@@ -28,6 +32,10 @@ class Debit(db.Model):
     def __init__(self, user_id, value):
         self.user_id = user_id
         self.value = value
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Balance(db.Model):
@@ -43,3 +51,23 @@ class Balance(db.Model):
         self.user_id = user_id
         self.value = value
 
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def credit(self, value):
+        if not self.value:
+            return self
+        self.value = self.value + float(value)
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def debit(self, value):
+        if not self.value:
+            return self
+        self.value = self.value - float(value)
+        db.session.add(self)
+        db.session.commit()
+        return self
