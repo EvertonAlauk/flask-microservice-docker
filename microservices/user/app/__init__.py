@@ -17,3 +17,4 @@ app.logger.setLevel(gunicorn_logger.level)
 from app.models import *
 from app.schemas import *
 from app.views import *
+from app.app_celery import celery
